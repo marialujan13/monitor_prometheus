@@ -8,6 +8,23 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
+typedef struct
+{
+    unsigned long long reads;
+    unsigned long long writes;
+    unsigned long long read_time;
+    unsigned long long write_time;
+} DiskStruct;
+
+typedef struct
+{
+    unsigned long long bytes_received;
+    unsigned long long bytes_transmitted;
+    unsigned long long packets_received;
+    unsigned long long packets_transmitted;
+} NetStruct;
+
 /**
  * @brief Tamaño del buffer utilizado para la recolección de métricas.
  */
@@ -27,12 +44,12 @@ double get_memory_usage();
 /**
  * @brief Obtiene las estadísticas de entrada/salida del disco.
  */
-double get_disk_io();
+DiskStruct get_disk_io();
 
 /**
  * @brief Obtiene las estadísticas de la red.
  */
-double get_network_stats();
+NetStruct get_network_stats();
 
 /**
  * @brief Obtiene el conteo de procesos en ejecución.
@@ -42,7 +59,7 @@ int get_process_count();
 /**
  * @brief Obtiene los cambios de contexto del sistema.
  */
-int get_context_switches();
+unsigned long long get_context_switches();
 /**
  * @brief Obtiene el porcentaje de uso de CPU desde /proc/stat.
  *
