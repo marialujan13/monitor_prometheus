@@ -1,7 +1,7 @@
 # Variables
 CC = gcc
 CFLAGS = -I include
-SRC = src/expose_metrics.c src/metrics.c src/main.c
+SRC = $(wildcard src/*.c)
 TARGET = build/metrics
 LIBS = -lprom -pthread -lpromhttp
 

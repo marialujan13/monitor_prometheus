@@ -4,7 +4,6 @@
  */
 
 #include "expose_metrics.h"
-#include "cjson_metrics.h"
 #include <stdbool.h>
 #include <signal.h>
 

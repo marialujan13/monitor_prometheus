@@ -4,7 +4,7 @@
  * de Prometheus.
  */
 
-#include "metrics.h"
+#include "cjson_metrics.h"
 // #include "read_cpu_usage.h"
 #include <errno.h>
 #include <prom.h>

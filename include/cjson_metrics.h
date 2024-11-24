@@ -1,6 +1,8 @@
 /**
  * @file cjson_metrics.h
  */
+#include "metrics.h"
+#include "cJSON.h"
 
 /**
  * @brief Enviar las métricas al pipe como un objeto JSON.

@@ -9,21 +9,25 @@
 #include <string.h>
 #include <unistd.h>
 
-typedef struct
-{
+/**
+ * @brief Estructura para almacenar las estadísticas de disco.
+ */
+struct DiskStats {
     unsigned long long reads;
     unsigned long long writes;
     unsigned long long read_time;
     unsigned long long write_time;
-} DiskStruct;
+};
 
-typedef struct
-{
+/**
+ * @brief Estructura para almacenar las estadísticas de red.
+ */
+struct NetStats {
     unsigned long long bytes_received;
     unsigned long long bytes_transmitted;
     unsigned long long packets_received;
     unsigned long long packets_transmitted;
-} NetStruct;
+};
 
 /**
  * @brief Tamaño del buffer utilizado para la recolección de métricas.
@@ -44,12 +48,12 @@ double get_memory_usage();
 /**
  * @brief Obtiene las estadísticas de entrada/salida del disco.
  */
-DiskStruct get_disk_io();
+struct DiskStats get_disk_io();
 
 /**
  * @brief Obtiene las estadísticas de la red.
  */
-NetStruct get_network_stats();
+struct NetStats get_network_stats();
 
 /**
  * @brief Obtiene el conteo de procesos en ejecución.

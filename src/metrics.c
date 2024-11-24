@@ -113,12 +113,12 @@ double get_cpu_usage()
 }
 
 // Leer estadísticas de I/O de disco
-DiskStruct get_disk_io()
+struct DiskStats get_disk_io()
 {
     FILE* fp;
-    DiskStruct disk_stats;
     char buffer[BUFFER_SIZE];
     unsigned long long read_sectors = 0, write_sectors = 0, read_time = 0, write_time = 0;
+    struct DiskStats disk = {0, 0, 0, 0};
 
     // Abrir el archivo /proc/diskstats
     fp = fopen("/proc/diskstats", "r");
@@ -131,36 +131,30 @@ DiskStruct get_disk_io()
     // Leer los valores de lecturas y escrituras
     while (fgets(buffer, sizeof(buffer), fp) != NULL)
     {
-
-        char device_name[BUFFER_SIZE];
-        if (sscanf(buffer, "%*u %*u %s %*u %*u %llu %llu %*u %*u %*u %llu %llu", device_name, &read_sectors, 
-        &read_time, &write_sectors, &write_time) == 5)
+        if(sscanf(buffer, "%*u %*u nvme0n1p5 %*u %*u %llu %llu %*u %*u %llu %llu", &read_sectors, 
+        &read_time, &write_sectors, &write_time) == 4)
         {
-            if (strcmp(device_name, "nvme0n1p5") == 0)
-            {
-                break; // Device found, no need to keep reading
-            }
+            break;
         }
     }
 
+    disk.reads = read_sectors;
+    disk.writes = write_sectors;
+    disk.read_time = read_time * (1e-3);
+    disk.write_time = write_time * (1e-3);
+
     fclose(fp);
 
-    disk_stats.reads = read_sectors;
-    disk_stats.writes = write_sectors;
-    disk_stats.read_time = read_time;
-    disk_stats.write_time = write_time;
-
-    return disk_stats;
+    return disk;
 }
 
 // Leer estadísticas de red
-NetStruct get_network_stats()
+struct NetStats get_network_stats()
 {
     FILE* fp;
-    NetStruct net_usage;
     char buffer[BUFFER_SIZE];
     unsigned long long rx_bytes = 0, tx_bytes = 0, rx_packets = 0, tx_packets = 0;
-    char iface_name[32];
+    struct NetStats net = {0, 0, 0, 0};
 
     // Abrir el archivo /proc/net/dev
     fp = fopen("/proc/net/dev", "r");
@@ -177,17 +171,8 @@ NetStruct get_network_stats()
     // Leer las estadísticas de la interfaz de red
     while (fgets(buffer, sizeof(buffer), fp) != NULL)
     {
-        sscanf(buffer, "%31s %llu %llu %*u %*u %*u %*u %*u %*u %llu %llu", iface_name, &rx_bytes, 
-        &rx_packets, &tx_bytes, &tx_packets);
-
-        // Eliminar el carácter ':' del nombre de la interfaz
-        char* colon = strchr(iface_name, ':');
-        if (colon)
-        {
-            *colon = '\0';
-        }
-
-        if (strcmp(iface_name, "wlp3s0") == 0)
+        if(sscanf(buffer, "wlp3s0: %llu %llu %*u %*u %*u %*u %*u %*u %llu %llu", &rx_bytes, 
+        &rx_packets, &tx_bytes, &tx_packets) == 4)
         {
             break;
         }
@@ -195,13 +180,12 @@ NetStruct get_network_stats()
 
     fclose(fp);
 
-    // Calcular una métrica simple de uso de red
-    net_usage.bytes_received = rx_bytes / (1e9); // Convertir a GB
-    net_usage.bytes_transmitted = tx_bytes / (1e9);
-    net_usage.packets_received = rx_packets;
-    net_usage.packets_transmitted = tx_packets;
+    net.bytes_received = rx_bytes;      
+    net.bytes_transmitted = tx_bytes; 
+    net.packets_received = rx_packets;
+    net.packets_transmitted = tx_packets;
 
-    return net_usage;
+    return net;
 }
 
 // Leer el conteo de procesos

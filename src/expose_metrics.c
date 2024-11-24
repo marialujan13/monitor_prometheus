@@ -56,7 +56,7 @@ void update_memory_gauge()
 // Nueva función para actualizar la métrica de I/O de disco
 void update_disk_io_gauge()
 {
-    DiskStruct io = get_disk_io();
+    struct DiskStats io = get_disk_io();
 
     pthread_mutex_lock(&lock);
     prom_gauge_set(disk_reads_metric, (double)io.reads, NULL);
@@ -69,7 +69,7 @@ void update_disk_io_gauge()
 // Nueva función para actualizar la métrica de uso de red
 void update_network_usage_gauge()
 {
-    NetStruct net = get_network_stats();
+    struct NetStats net = get_network_stats();
         
     pthread_mutex_lock(&lock);
     prom_gauge_set(network_transfers_metric, (double)net.bytes_transmitted, NULL);
