@@ -4,9 +4,12 @@
  */
 
 #include "expose_metrics.h"
+#include "cjson_metrics.h"
 #include <stdbool.h>
+#include <signal.h>
 
 #define SLEEP_TIME 1
+volatile sig_atomic_t keep_running = 1;
 
 /**
  * @brief Función principal que ejecuta el programa.
@@ -28,14 +31,16 @@ int main(int argc, char* argv[])
     init_metrics(); // Inicializa las métricas
 
     // Bucle principal para actualizar las métricas cada segundo
-    while (true)
+    while (keep_running)
     {
-        update_cpu_gauge();
-        update_memory_gauge();
-        update_disk_io_gauge();
-        update_network_usage_gauge();
-        update_process_count_gauge();
-        update_context_switches_gauge();
+        //update_cpu_gauge();
+        //update_memory_gauge();
+        //update_disk_io_gauge();
+        //update_network_usage_gauge();
+        //update_process_count_gauge();
+        //update_context_switches_gauge();
+        send_metrics_as_json();
+        
         sleep(SLEEP_TIME);
     }
 

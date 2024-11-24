@@ -1,7 +1,10 @@
-#include "../include/metrics.h"
+#include "metrics.h"
 #include "cJSON.h"
-#include <stdio.h>
 
+/**
+ * @brief Envía las métricas recolectadas como un objeto JSON a través de un
+ * pipe.
+ */
 void send_metrics_as_json() {
   cJSON *root = cJSON_CreateObject();
 
@@ -37,6 +40,7 @@ void send_metrics_as_json() {
 
   // Convertir el objeto JSON a string y enviarlo al pipe
   char *json_data = cJSON_Print(root);
+  
   if (json_data != NULL) {
     FILE *pipe =
         fopen("/tmp/monitor_pipe",
