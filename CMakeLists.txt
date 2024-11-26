@@ -22,7 +22,7 @@ set(SOURCES
 add_executable(metrics ${SOURCES})
 
 #Especifica las biblioteca cjson
-find_package(cJSON cjson REQUIRED)
+find_package(cJSON REQUIRED)
 
 #Busca las bibliotecas externas
 find_library(PROM_LIB prom REQUIRED)
