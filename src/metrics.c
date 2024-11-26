@@ -37,10 +37,10 @@ double get_memory_usage()
     }
 
     // Calcular el porcentaje de uso de memoria
-    double used_mem = total_mem - free_mem;
-    double mem_usage_percent = (used_mem / total_mem) * 100.0;
+    unsigned long long used_mem = total_mem - free_mem;
+    unsigned long long mem_usage_percent = used_mem / total_mem * (unsigned long long)100.0;
 
-    return mem_usage_percent;
+    return (double)mem_usage_percent;
 }
 
 double get_cpu_usage()
@@ -97,7 +97,9 @@ double get_cpu_usage()
     }
 
     // Calcular el porcentaje de uso de CPU
-    cpu_usage_percent = ((double)(totald - idled) / totald) * 100.0;
+    unsigned long long resta = totald - idled;
+    double division = (double)resta / (double)totald;
+    cpu_usage_percent = division * 100.0;
 
     // Actualizar los valores anteriores para la siguiente lectura
     prev_user = user;
@@ -109,7 +111,7 @@ double get_cpu_usage()
     prev_softirq = softirq;
     prev_steal = steal;
 
-    return cpu_usage_percent;
+    return (double)cpu_usage_percent;
 }
 
 // Leer estadísticas de I/O de disco
@@ -125,14 +127,14 @@ struct DiskStats get_disk_io()
     if (fp == NULL)
     {
         perror("Error al abrir /proc/diskstats");
-        //exit(EXIT_FAILURE);
+        // exit(EXIT_FAILURE);
     }
 
     // Leer los valores de lecturas y escrituras
     while (fgets(buffer, sizeof(buffer), fp) != NULL)
     {
-        if(sscanf(buffer, "%*u %*u nvme0n1p5 %*u %*u %llu %llu %*u %*u %llu %llu", &read_sectors, 
-        &read_time, &write_sectors, &write_time) == 4)
+        if (sscanf(buffer, "%*u %*u nvme0n1p5 %*u %*u %llu %llu %*u %*u %llu %llu", &read_sectors, &read_time,
+                   &write_sectors, &write_time) == 4)
         {
             break;
         }
@@ -140,8 +142,8 @@ struct DiskStats get_disk_io()
 
     disk.reads = read_sectors;
     disk.writes = write_sectors;
-    disk.read_time = read_time * (1e-3);
-    disk.write_time = write_time * (1e-3);
+    disk.read_time = read_time * (unsigned long long)(1e-3);
+    disk.write_time = write_time * (unsigned long long)(1e-3);
 
     fclose(fp);
 
@@ -161,7 +163,7 @@ struct NetStats get_network_stats()
     if (fp == NULL)
     {
         perror("Error al abrir /proc/net/dev");
-        //exit(EXIT_FAILURE);
+        // exit(EXIT_FAILURE);
     }
 
     // Saltar las dos primeras líneas del archivo (encabezados)
@@ -171,8 +173,8 @@ struct NetStats get_network_stats()
     // Leer las estadísticas de la interfaz de red
     while (fgets(buffer, sizeof(buffer), fp) != NULL)
     {
-        if(sscanf(buffer, "wlp3s0: %llu %llu %*u %*u %*u %*u %*u %*u %llu %llu", &rx_bytes, 
-        &rx_packets, &tx_bytes, &tx_packets) == 4)
+        if (sscanf(buffer, "wlp3s0: %llu %llu %*u %*u %*u %*u %*u %*u %llu %llu", &rx_bytes, &rx_packets, &tx_bytes,
+                   &tx_packets) == 4)
         {
             break;
         }
@@ -180,8 +182,8 @@ struct NetStats get_network_stats()
 
     fclose(fp);
 
-    net.bytes_received = rx_bytes;      
-    net.bytes_transmitted = tx_bytes; 
+    net.bytes_received = rx_bytes;
+    net.bytes_transmitted = tx_bytes;
     net.packets_received = rx_packets;
     net.packets_transmitted = tx_packets;
 
@@ -229,7 +231,7 @@ unsigned long long get_context_switches()
     if (fp == NULL)
     {
         perror("Error al abrir /proc/stat");
-        return -1;
+        return (unsigned long long)(-1.0);
     }
 
     // Leer las líneas hasta encontrar la línea que contiene el número de cambios

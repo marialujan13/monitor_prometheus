@@ -70,7 +70,7 @@ void update_disk_io_gauge()
 void update_network_usage_gauge()
 {
     struct NetStats net = get_network_stats();
-        
+
     pthread_mutex_lock(&lock);
     prom_gauge_set(network_transfers_metric, (double)net.bytes_transmitted, NULL);
     prom_gauge_set(network_reception_metric, (double)net.bytes_received, NULL);
@@ -98,7 +98,7 @@ void update_process_count_gauge()
 // Nueva función para actualizar la métrica de cambios de contexto
 void update_context_switches_gauge()
 {
-    int ctxt_switches = get_context_switches();
+    int ctxt_switches = (int)get_context_switches();
     if (ctxt_switches >= 0)
     {
         pthread_mutex_lock(&lock);
@@ -158,23 +158,23 @@ void init_metrics()
     cpu_usage_metric = prom_collector_registry_must_register_metric(
         prom_gauge_new("cpu_usage_percentage", "Porcentaje de uso de CPU", 0, NULL));
 
-    disk_read_time_metric = prom_collector_registry_must_register_metric( 
+    disk_read_time_metric = prom_collector_registry_must_register_metric(
         prom_gauge_new("disk_time_read", "Estadisticas de tiempo de Lectura de Disco", 0, NULL));
-    disk_write_time_metric = prom_collector_registry_must_register_metric( 
+    disk_write_time_metric = prom_collector_registry_must_register_metric(
         prom_gauge_new("disk_time_write", "Estadisticas de tiempo de Escritura de Disco", 0, NULL));
-    disk_reads_metric = prom_collector_registry_must_register_metric( 
+    disk_reads_metric = prom_collector_registry_must_register_metric(
         prom_gauge_new("disk_read", "Estadisticas de Lectura de Disco", 0, NULL));
-    disk_writes_metric = prom_collector_registry_must_register_metric( 
+    disk_writes_metric = prom_collector_registry_must_register_metric(
         prom_gauge_new("disk_write", "Estadisticas de Escritura de Disco", 0, NULL));
-    network_transfers_metric = prom_collector_registry_must_register_metric( 
+    network_transfers_metric = prom_collector_registry_must_register_metric(
         prom_gauge_new("network_usage_transmission", "Estadisticas de Envio de Red [en GB]", 0, NULL));
-    network_reception_metric = prom_collector_registry_must_register_metric( 
+    network_reception_metric = prom_collector_registry_must_register_metric(
         prom_gauge_new("network_usage_reception", "Estadisticas de Recepcion de Red [en GB]", 0, NULL));
-    network_packet_tx_metric = prom_collector_registry_must_register_metric( 
+    network_packet_tx_metric = prom_collector_registry_must_register_metric(
         prom_gauge_new("network_usage_packages_tx", "Estadisticas de Paquetes Enviados de Red", 0, NULL));
-    network_packet_rx_metric = prom_collector_registry_must_register_metric( 
+    network_packet_rx_metric = prom_collector_registry_must_register_metric(
         prom_gauge_new("network_usage_packages_rx", "Estadisticas de Paquetes Recibidos de Red", 0, NULL));
-    
+
     process_count_metric = prom_collector_registry_must_register_metric(
         prom_gauge_new("process_count", "Numero de procesos corriendo", 0, NULL));
     context_switches_metric = prom_collector_registry_must_register_metric(

@@ -43,27 +43,27 @@ struct NetStats {
  * @return Uso de memoria como porcentaje (0.0 a 100.0), o -1.0 en caso de
  * error.
  */
-double get_memory_usage();
+double get_memory_usage(void);
 
 /**
  * @brief Obtiene las estadísticas de entrada/salida del disco.
  */
-struct DiskStats get_disk_io();
+struct DiskStats get_disk_io(void);
 
 /**
  * @brief Obtiene las estadísticas de la red.
  */
-struct NetStats get_network_stats();
+struct NetStats get_network_stats(void);
 
 /**
  * @brief Obtiene el conteo de procesos en ejecución.
  */
-int get_process_count();
+int get_process_count(void);
 
 /**
  * @brief Obtiene los cambios de contexto del sistema.
  */
-unsigned long long get_context_switches();
+unsigned long long get_context_switches(void);
 /**
  * @brief Obtiene el porcentaje de uso de CPU desde /proc/stat.
  *
@@ -72,4 +72,4 @@ unsigned long long get_context_switches();
  *
  * @return Uso de CPU como porcentaje (0.0 a 100.0), o -1.0 en caso de error.
  */
-double get_cpu_usage();
+double get_cpu_usage(void);
