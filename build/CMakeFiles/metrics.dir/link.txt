@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/metrics.dir/src/metrics.c.o CMakeFiles/metrics.dir/src/main.c.o CMakeFiles/metrics.dir/src/expose_metrics.c.o CMakeFiles/metrics.dir/src/cjson_metrics.c.o -o bin/metrics  -Wl,-rpath,/usr/local/lib /usr/local/lib/libprom.so /usr/local/lib/libpromhttp.so -lpthread /usr/lib/x86_64-linux-gnu/libcjson.so.1.7.17 -lm 

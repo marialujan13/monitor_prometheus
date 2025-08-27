@@ -10,6 +10,24 @@
 #include <unistd.h>
 
 /**
+ * @brief Estructura para almacenar métricas avanzadas de uso de memoria
+ */
+struct MemStats {
+    double fragmentation;           // Nivel de fragmentación externa (0.0 - 1.0)
+    unsigned long long total_free;  // Memoria total libre
+    unsigned long long largest_free_block; // Tamaño del bloque libre más grande
+
+    // Contadores de frecuencia de políticas
+    unsigned long long first_fit_count;
+    unsigned long long best_fit_count;
+    unsigned long long worst_fit_count;
+
+    // Métricas de eficiencia
+    unsigned long long successful_allocs;  // Asignaciones exitosas
+    unsigned long long failed_allocs;      // Asignaciones fallidas
+};
+
+/**
  * @brief Estructura para almacenar las estadísticas de disco.
  */
 struct DiskStats {

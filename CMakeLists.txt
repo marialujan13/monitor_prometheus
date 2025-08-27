@@ -29,7 +29,7 @@ find_library(PROM_LIB prom REQUIRED)
 find_library(PROMHTTP_LIB promhttp REQUIRED)
 
 # Link libraries
-target_link_libraries(metrics PRIVATE ${PROM_LIB} ${PROMHTTP_LIB} pthread cjson::cjson)
+target_link_libraries(metrics PRIVATE ${PROM_LIB} ${PROMHTTP_LIB} pthread cjson)
 
 # Establece el directorio de salida para el ejecutable
 set_target_properties(metrics PROPERTIES

@@ -38,9 +38,9 @@ double get_memory_usage()
 
     // Calcular el porcentaje de uso de memoria
     unsigned long long used_mem = total_mem - free_mem;
-    unsigned long long mem_usage_percent = used_mem / total_mem * (unsigned long long)100.0;
+    double mem_usage_percent = (double)used_mem / (double)total_mem * 100.0;
 
-    return (double)mem_usage_percent;
+    return mem_usage_percent;
 }
 
 double get_cpu_usage()
@@ -133,17 +133,17 @@ struct DiskStats get_disk_io()
     // Leer los valores de lecturas y escrituras
     while (fgets(buffer, sizeof(buffer), fp) != NULL)
     {
-        if (sscanf(buffer, "%*u %*u nvme0n1p5 %*u %*u %llu %llu %*u %*u %llu %llu", &read_sectors, &read_time,
+        if (sscanf(buffer, "%*u %*u nvme0n1 %*u %*u %llu %llu %*u %*u %llu %llu", &read_sectors, &read_time,
                    &write_sectors, &write_time) == 4)
         {
             break;
         }
     }
 
-    disk.reads = read_sectors;
-    disk.writes = write_sectors;
-    disk.read_time = read_time * (unsigned long long)(1e-3);
-    disk.write_time = write_time * (unsigned long long)(1e-3);
+    disk.reads = read_sectors * 512; // pasar de sectores a bytes (1 sector = 512 bytes)
+    disk.writes = write_sectors * 512; // pasar de sectores a bytes (1 sector = 512 bytes)
+    disk.read_time = read_time / 1000.0; // pasar de ms a s
+    disk.write_time = write_time / 1000.0; // pasar de ms a s
 
     fclose(fp);
 
@@ -173,7 +173,7 @@ struct NetStats get_network_stats()
     // Leer las estadísticas de la interfaz de red
     while (fgets(buffer, sizeof(buffer), fp) != NULL)
     {
-        if (sscanf(buffer, "wlp3s0: %llu %llu %*u %*u %*u %*u %*u %*u %llu %llu", &rx_bytes, &rx_packets, &tx_bytes,
+        if (sscanf(buffer, "wlp2s0: %llu %llu %*u %*u %*u %*u %*u %*u %llu %llu", &rx_bytes, &rx_packets, &tx_bytes,
                    &tx_packets) == 4)
         {
             break;
@@ -248,3 +248,5 @@ unsigned long long get_context_switches()
 
     return ctxt;
 }
+
+

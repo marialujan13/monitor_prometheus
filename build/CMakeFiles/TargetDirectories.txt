@@ -1,0 +1,3 @@
+/home/lujan/SO1/custom-shell/monitor_prometheus/build/CMakeFiles/metrics.dir
+/home/lujan/SO1/custom-shell/monitor_prometheus/build/CMakeFiles/edit_cache.dir
+/home/lujan/SO1/custom-shell/monitor_prometheus/build/CMakeFiles/rebuild_cache.dir

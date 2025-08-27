@@ -39,7 +39,7 @@ void send_metrics_as_json()
     if (json_data != NULL)
     {
         FILE* pipe = fopen("/tmp/monitor_pipe",
-                           "a"); // "a" mantiene el pipe abierto para múltiples escrituras
+                           "w"); // "a" mantiene el pipe abierto para múltiples escrituras
         if (pipe)
         {
             fprintf(pipe, "%s\n", json_data);
