@@ -32,12 +32,24 @@ int main(void)
     // Bucle principal para actualizar las métricas cada segundo
     while (keep_running)
     {
+<<<<<<< Updated upstream
         //update_cpu_gauge();
         //update_memory_gauge();
         //update_disk_io_gauge();
         //update_network_usage_gauge();
         //update_process_count_gauge();
         //update_context_switches_gauge();
+=======
+
+        update_cpu_gauge();
+        update_memory_gauge();
+        update_disk_io_gauge();
+        update_network_usage_gauge();
+        update_process_count_gauge();
+        update_context_switches_gauge();
+        // Nueva metrica de memoria personalizada
+        update_custom_memory_gauge();
+>>>>>>> Stashed changes
         send_metrics_as_json();
 
         sleep(SLEEP_TIME);

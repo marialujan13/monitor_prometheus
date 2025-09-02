@@ -8,24 +8,21 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
 /**
- * @brief Estructura para almacenar métricas avanzadas de uso de memoria
+ * @brief Estado de uso de CPU para el cálculo de métricas.
  */
-struct MemStats {
-    double fragmentation;           // Nivel de fragmentación externa (0.0 - 1.0)
-    unsigned long long total_free;  // Memoria total libre
-    unsigned long long largest_free_block; // Tamaño del bloque libre más grande
+typedef struct {
+    unsigned long long prev_user;
+    unsigned long long prev_nice;
+    unsigned long long prev_system;
+    unsigned long long prev_idle;
+    unsigned long long prev_iowait;
+    unsigned long long prev_irq;
+    unsigned long long prev_softirq;
+    unsigned long long prev_steal;
+    //int first_call;
+} CpuUsageState;
 
-    // Contadores de frecuencia de políticas
-    unsigned long long first_fit_count;
-    unsigned long long best_fit_count;
-    unsigned long long worst_fit_count;
-
-    // Métricas de eficiencia
-    unsigned long long successful_allocs;  // Asignaciones exitosas
-    unsigned long long failed_allocs;      // Asignaciones fallidas
-};
 
 /**
  * @brief Estructura para almacenar las estadísticas de disco.
@@ -90,4 +87,5 @@ unsigned long long get_context_switches(void);
  *
  * @return Uso de CPU como porcentaje (0.0 a 100.0), o -1.0 en caso de error.
  */
-double get_cpu_usage(void);
+double get_cpu_usage(CpuUsageState* state);
+

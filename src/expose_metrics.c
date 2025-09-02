@@ -23,9 +23,27 @@ static prom_gauge_t* network_packet_rx_metric;
 static prom_gauge_t* process_count_metric;
 static prom_gauge_t* context_switches_metric;
 
-void update_cpu_gauge()
-{
-    double usage = get_cpu_usage();
+/** Nuevas metricas para memoria personalizada */
+static prom_gauge_t* custom_memory_allocated_metric;
+static prom_gauge_t* custom_memory_free_metric;
+static prom_gauge_t* custom_memory_fragmentation_metric;
+static prom_gauge_t* custom_memory_largest_free_block_metric;
+static prom_gauge_t* custom_memory_most_efficient_policy_metric;
+
+void update_custom_memory_gauge(){
+    pthread_mutex_lock(&lock);
+    prom_gauge_set(custom_memory_allocated_metric, (double)get_custom_memory_allocated(), NULL);
+    prom_gauge_set(custom_memory_free_metric, (double)get_custom_memory_free(), NULL);
+    prom_gauge_set(custom_memory_fragmentation_metric, (double)get_custom_memory_fragmentation(), NULL);
+    prom_gauge_set(custom_memory_largest_free_block_metric, (double)get_custom_memory_largest_free_block(), NULL);
+    prom_gauge_set(custom_memory_most_efficient_policy_metric, (double)get_custom_memory_most_efficient_policy(), NULL);
+    pthread_mutex_unlock(&lock);
+}
+
+void update_cpu_gauge() 
+{   
+    CpuUsageState state = {0,0,0,0,0,0,0,0};
+    double usage = get_cpu_usage(&state);
     if (usage >= 0)
     {
         pthread_mutex_lock(&lock);

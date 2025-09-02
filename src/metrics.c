@@ -43,10 +43,8 @@ double get_memory_usage()
     return mem_usage_percent;
 }
 
-double get_cpu_usage()
-{
-    static unsigned long long prev_user = 0, prev_nice = 0, prev_system = 0, prev_idle = 0, prev_iowait = 0,
-                              prev_irq = 0, prev_softirq = 0, prev_steal = 0;
+double get_cpu_usage(CpuUsageState* state){
+    
     unsigned long long user, nice, system, idle, iowait, irq, softirq, steal;
     unsigned long long totald, idled;
     double cpu_usage_percent;
@@ -78,10 +76,10 @@ double get_cpu_usage()
     }
 
     // Calcular las diferencias entre las lecturas actuales y anteriores
-    unsigned long long prev_idle_total = prev_idle + prev_iowait;
+    unsigned long long prev_idle_total = state->prev_idle + state->prev_iowait;
     unsigned long long idle_total = idle + iowait;
 
-    unsigned long long prev_non_idle = prev_user + prev_nice + prev_system + prev_irq + prev_softirq + prev_steal;
+    unsigned long long prev_non_idle = state->prev_user + state->prev_nice + state->prev_system + state->prev_irq + state->prev_softirq + state->prev_steal;
     unsigned long long non_idle = user + nice + system + irq + softirq + steal;
 
     unsigned long long prev_total = prev_idle_total + prev_non_idle;
@@ -102,14 +100,14 @@ double get_cpu_usage()
     cpu_usage_percent = division * 100.0;
 
     // Actualizar los valores anteriores para la siguiente lectura
-    prev_user = user;
-    prev_nice = nice;
-    prev_system = system;
-    prev_idle = idle;
-    prev_iowait = iowait;
-    prev_irq = irq;
-    prev_softirq = softirq;
-    prev_steal = steal;
+    state->prev_user = user;
+    state->prev_nice = nice;
+    state->prev_system = system;
+    state->prev_idle = idle;
+    state->prev_iowait = iowait;
+    state->prev_irq = irq;
+    state->prev_softirq = softirq;
+    state->prev_steal = steal;
 
     return (double)cpu_usage_percent;
 }

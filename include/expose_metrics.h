@@ -5,7 +5,6 @@
  */
 
 #include "cjson_metrics.h"
-// #include "read_cpu_usage.h"
 #include <errno.h>
 #include <prom.h>
 #include <promhttp.h>
@@ -48,6 +47,11 @@ void update_process_count_gauge(void);
  * @brief Actualiza el gauge del número de cambios de contexto.
  */
 void update_context_switches_gauge(void);
+
+/**
+ * @brief Actualiza las métricas de memoria personalizada.
+ */
+void update_custom_memory_gauge(void);
 
 /**
  * @brief Función del hilo para exponer las métricas vía HTTP en el puerto 8000.
