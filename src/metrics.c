@@ -1,5 +1,90 @@
 #include "metrics.h"
 
+#include <cjson/cJSON.h>
+#include <sys/stat.h>
+
+#define ALLOCATOR_LOG_PATH "lib/logs/memory_audit.json"
+
+// Guarda el índice actual entre llamadas
+int get_allocator_metrics(double *allocated, double *free_mem, double *frag) {
+    static int current_index = 0;  // mantiene el índice entre ejecuciones
+
+    FILE *fp = fopen(ALLOCATOR_LOG_PATH, "r");
+    if (!fp) {
+        perror("Error al abrir memory_audit.json");
+        return -1;
+    }
+
+    struct stat st;
+    if (stat(ALLOCATOR_LOG_PATH, &st) != 0) {
+        fclose(fp);
+        return -1;
+    }
+
+    char *content = malloc(st.st_size + 1);
+    fread(content, 1, st.st_size, fp);
+    content[st.st_size] = '\0';
+    fclose(fp);
+
+    cJSON *root = cJSON_Parse(content);
+    if (!root) {
+        free(content);
+        return -1;
+    }
+
+    cJSON *log_array = cJSON_GetObjectItem(root, "memory_audit_log");
+    if (!log_array || !cJSON_IsArray(log_array)) {
+        cJSON_Delete(root);
+        free(content);
+        return -1;
+    }
+
+    int total_items = cJSON_GetArraySize(log_array);
+    if (total_items == 0) {
+        cJSON_Delete(root);
+        free(content);
+        return -1;
+    }
+
+    // Si llegamos al final, volver a empezar
+    if (current_index >= total_items)
+        current_index = 0;
+
+    // Tomar el elemento correspondiente
+    cJSON *item = cJSON_GetArrayItem(log_array, current_index);
+    if (!item) {
+        cJSON_Delete(root);
+        free(content);
+        return -1;
+    }
+
+    // Extraer heap_info
+    cJSON *heap_info = cJSON_GetObjectItem(item, "heap_info");
+    if (heap_info) {
+        cJSON *alloc = cJSON_GetObjectItem(heap_info, "total_allocated");
+        cJSON *freeb = cJSON_GetObjectItem(heap_info, "total_free");
+        cJSON *fragm = cJSON_GetObjectItem(heap_info, "fragmentation_ratio");
+
+        if (alloc && freeb && fragm) {
+            *allocated = alloc->valuedouble;
+            *free_mem  = freeb->valuedouble;
+            *frag      = fragm->valuedouble;
+        } else {
+            *allocated = *free_mem = *frag = 0.0;
+        }
+    }
+
+    printf("[ALLOCATOR] idx=%d alloc=%.2f free=%.2f frag=%.2f\n",
+           current_index, *allocated, *free_mem, *frag);
+
+    // Avanzar para la próxima llamada
+    current_index++;
+
+    cJSON_Delete(root);
+    free(content);
+    return 0;
+}
+
 double get_memory_usage()
 {
     FILE* fp;

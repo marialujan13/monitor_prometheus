@@ -4,6 +4,7 @@
  */
 
 #include "expose_metrics.h"
+//#include "metrics.h"
 #include <signal.h>
 #include <stdbool.h>
 
@@ -32,24 +33,13 @@ int main(void)
     // Bucle principal para actualizar las métricas cada segundo
     while (keep_running)
     {
-<<<<<<< Updated upstream
-        //update_cpu_gauge();
-        //update_memory_gauge();
-        //update_disk_io_gauge();
-        //update_network_usage_gauge();
-        //update_process_count_gauge();
-        //update_context_switches_gauge();
-=======
-
         update_cpu_gauge();
         update_memory_gauge();
         update_disk_io_gauge();
         update_network_usage_gauge();
         update_process_count_gauge();
         update_context_switches_gauge();
-        // Nueva metrica de memoria personalizada
-        update_custom_memory_gauge();
->>>>>>> Stashed changes
+        update_allocator_metrics_from_file();
         send_metrics_as_json();
 
         sleep(SLEEP_TIME);

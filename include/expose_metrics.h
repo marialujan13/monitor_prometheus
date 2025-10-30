@@ -69,3 +69,8 @@ void init_metrics(void);
  * @brief Destructor de mutex
  */
 void destroy_mutex(void);
+
+/**
+ * 
+ */
+void update_allocator_metrics_from_file();

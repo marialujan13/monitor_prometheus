@@ -27,17 +27,19 @@ static prom_gauge_t* context_switches_metric;
 static prom_gauge_t* custom_memory_allocated_metric;
 static prom_gauge_t* custom_memory_free_metric;
 static prom_gauge_t* custom_memory_fragmentation_metric;
-static prom_gauge_t* custom_memory_largest_free_block_metric;
-static prom_gauge_t* custom_memory_most_efficient_policy_metric;
 
-void update_custom_memory_gauge(){
-    pthread_mutex_lock(&lock);
-    prom_gauge_set(custom_memory_allocated_metric, (double)get_custom_memory_allocated(), NULL);
-    prom_gauge_set(custom_memory_free_metric, (double)get_custom_memory_free(), NULL);
-    prom_gauge_set(custom_memory_fragmentation_metric, (double)get_custom_memory_fragmentation(), NULL);
-    prom_gauge_set(custom_memory_largest_free_block_metric, (double)get_custom_memory_largest_free_block(), NULL);
-    prom_gauge_set(custom_memory_most_efficient_policy_metric, (double)get_custom_memory_most_efficient_policy(), NULL);
-    pthread_mutex_unlock(&lock);
+void update_allocator_metrics_from_file() {
+    double used = 0.0, free_mem = 0.0, frag = 0.0;
+
+    if (get_allocator_metrics(&used, &free_mem, &frag) == 0) {
+        pthread_mutex_lock(&lock);
+        prom_gauge_set(custom_memory_allocated_metric, used, NULL);
+        prom_gauge_set(custom_memory_free_metric, free_mem, NULL);
+        prom_gauge_set(custom_memory_fragmentation_metric, frag, NULL);
+        pthread_mutex_unlock(&lock);
+    } else {
+        fprintf(stderr, "[MONITOR] No se pudieron leer métricas del allocator JSON.\n");
+    }
 }
 
 void update_cpu_gauge() 
@@ -197,6 +199,15 @@ void init_metrics()
         prom_gauge_new("process_count", "Numero de procesos corriendo", 0, NULL));
     context_switches_metric = prom_collector_registry_must_register_metric(
         prom_gauge_new("context_switches", "Cambios de contexto", 0, NULL));
+
+    //Metricas de memoria personalizada
+    custom_memory_allocated_metric = prom_collector_registry_must_register_metric(
+        prom_gauge_new("allocator_memory_used_bytes", "Memoria asignada por el allocator", 0, NULL));
+    custom_memory_free_metric = prom_collector_registry_must_register_metric(
+        prom_gauge_new("allocator_memory_free_bytes", "Memoria libre detectada por el allocator", 0, NULL));
+    custom_memory_fragmentation_metric = prom_collector_registry_must_register_metric(
+        prom_gauge_new("allocator_fragmentation_ratio", "Porcentaje de fragmentación del allocator", 0, NULL));
+
 }
 
 void destroy_mutex()

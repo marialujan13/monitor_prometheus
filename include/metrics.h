@@ -89,3 +89,8 @@ unsigned long long get_context_switches(void);
  */
 double get_cpu_usage(CpuUsageState* state);
 
+/**
+ * 
+ * 
+ */
+int get_allocator_metrics(double *allocated, double *free_mem, double *frag);

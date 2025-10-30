@@ -19,10 +19,6 @@ void send_metrics_as_json()
     int running_processes = get_process_count();
     unsigned long long context_switches = get_context_switches();
 
-    // Recolectar métricas de memoria personalizada
-    struct MemStats custom_mem_stats;
-    int mem_stats_available = (calculate_mem_stats(&custom_mem_stats) == 0);
-
     // Añadir métricas al objeto JSON
     cJSON_AddNumberToObject(root, "cpu_usage_percentage", (double)cpu_usage);
     cJSON_AddNumberToObject(root, "memory_usage_percentage", (double)memory_usage);
@@ -38,30 +34,6 @@ void send_metrics_as_json()
                                 : 0.0);
     cJSON_AddNumberToObject(root, "running_processes_count", (double)running_processes);
     cJSON_AddNumberToObject(root, "context_switches_total", (double)context_switches);
-
-    
-    // Añadir métricas de memoria personalizada
-    if (mem_stats_available) {
-        cJSON_AddNumberToObject(root, "custom_memory_allocated_bytes", (double)custom_mem_stats.total_allocated);
-        cJSON_AddNumberToObject(root, "custom_memory_free_bytes", (double)custom_mem_stats.total_free);
-        cJSON_AddNumberToObject(root, "custom_memory_fragmentation_percentage", custom_mem_stats.fragmentation * 100.0);
-        cJSON_AddNumberToObject(root, "custom_memory_largest_free_block_bytes", (double)custom_mem_stats.largest_free_block);
-        cJSON_AddStringToObject(root, "custom_memory_policy", get_policy_name(custom_mem_stats.most_efficient_policy));
-        
-        // Calcular eficiencia
-        size_t total_memory = custom_mem_stats.total_allocated + custom_mem_stats.total_free;
-        double efficiency = (total_memory > 0) ? (double)custom_mem_stats.total_free / (double)total_memory : 0.0;
-        cJSON_AddNumberToObject(root, "custom_memory_efficiency_ratio", efficiency);
-    } else {
-        // Valores por defecto si no hay estadísticas disponibles
-        cJSON_AddNumberToObject(root, "custom_memory_allocated_bytes", 0.0);
-        cJSON_AddNumberToObject(root, "custom_memory_free_bytes", 0.0);
-        cJSON_AddNumberToObject(root, "custom_memory_fragmentation_percentage", 0.0);
-        cJSON_AddNumberToObject(root, "custom_memory_largest_free_block_bytes", 0.0);
-        cJSON_AddStringToObject(root, "custom_memory_policy", "UNKNOWN");
-        cJSON_AddNumberToObject(root, "custom_memory_efficiency_ratio", 0.0);
-    }
-
 
     // Convertir el objeto JSON a string y enviarlo al pipe
     char* json_data = cJSON_Print(root);
